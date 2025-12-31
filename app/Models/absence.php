@@ -56,7 +56,10 @@ class absence extends Model
             
             $etudiant->noteabs()->updateOrCreate(
                 ['id_etudiant' => $etudiant->id_etudiant],
-                ['note' => $noteCalculee]
+                [
+                    'Id_note' => 'NOTE_' . $etudiant->id_etudiant,
+                    'note' => $noteCalculee
+                ]
             );
         }
     }

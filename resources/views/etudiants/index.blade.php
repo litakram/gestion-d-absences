@@ -18,6 +18,27 @@
                 </div>
             @endif
 
+            <!-- Search Bar -->
+            <div class="mb-6">
+                <form action="{{ route('etudiants.index') }}" method="GET" class="flex gap-2">
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        placeholder="Rechercher par ID, nom, prénom ou filière..."
+                        class="flex-1 rounded-md border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    >
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-md">
+                        Rechercher
+                    </button>
+                    @if(request('search'))
+                        <a href="{{ route('etudiants.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-md">
+                            Réinitialiser
+                        </a>
+                    @endif
+                </form>
+            </div>
+
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

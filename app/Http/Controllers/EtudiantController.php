@@ -10,9 +10,21 @@ class EtudiantController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $etudiants = etudiant::with('noteabs')->paginate(15);
+        $query = etudiant::with('noteabs');
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('id_etudiant', 'LIKE', "%{$search}%")
+                  ->orWhere('nom', 'LIKE', "%{$search}%")
+                  ->orWhere('prenom', 'LIKE', "%{$search}%")
+                  ->orWhere('filiere', 'LIKE', "%{$search}%");
+            });
+        }
+        
+        $etudiants = $query->paginate(15)->appends(['search' => $request->search]);
         return view('etudiants.index', compact('etudiants'));
     }
 

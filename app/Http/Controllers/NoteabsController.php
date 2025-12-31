@@ -11,9 +11,25 @@ class NoteabsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $noteabs = noteabs::with('etudiant')->paginate(20);
+        $query = noteabs::with('etudiant');
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('Id_note', 'LIKE', "%{$search}%")
+                  ->orWhere('note', 'LIKE', "%{$search}%")
+                  ->orWhere('remarque', 'LIKE', "%{$search}%")
+                  ->orWhereHas('etudiant', function($q) use ($search) {
+                      $q->where('nom', 'LIKE', "%{$search}%")
+                        ->orWhere('prenom', 'LIKE', "%{$search}%")
+                        ->orWhere('id_etudiant', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+        
+        $noteabs = $query->paginate(20)->appends(['search' => $request->search]);
         return view('noteabs.index', compact('noteabs'));
     }
 

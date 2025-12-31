@@ -11,9 +11,25 @@ class AbsenceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $absences = absence::with('etudiant')->latest('date_absence')->paginate(20);
+        $query = absence::with('etudiant')->latest('date_absence');
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('Id_Absence', 'LIKE', "%{$search}%")
+                  ->orWhere('date_absence', 'LIKE', "%{$search}%")
+                  ->orWhere('seance', 'LIKE', "%{$search}%")
+                  ->orWhereHas('etudiant', function($q) use ($search) {
+                      $q->where('nom', 'LIKE', "%{$search}%")
+                        ->orWhere('prenom', 'LIKE', "%{$search}%")
+                        ->orWhere('id_etudiant', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+        
+        $absences = $query->paginate(20)->appends(['search' => $request->search]);
         return view('absences.index', compact('absences'));
     }
 
